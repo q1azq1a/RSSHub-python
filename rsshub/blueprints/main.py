@@ -472,3 +472,13 @@ def hf_dataset():
     content_col = request.args.get('content_col')
     return render_template('main/atom.xml', **filter_content(ctx(dataset_name, title_col=title_col, content_col=content_col)))
 
+
+@bp.route('/xhunt/trends/<string:group>/<string:hours>/<string:tag>')
+@bp.route('/xhunt/trends/<string:group>/<string:hours>')
+@bp.route('/xhunt/trends/<string:group>')
+@bp.route('/xhunt/trends')
+@swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
+def xhunt_trends(group='global', hours='24', tag='ai'):
+    from rsshub.spiders.xhunt.trends import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(group, hours, tag)))
+
